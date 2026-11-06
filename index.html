@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenkaichi Clash 32-Bit - DBZ Fighting Engine</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Orbitron:wght@700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container" class="shake-target">
+        <!-- Canvas de Renderizado Gráfico -->
+        <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+        <!-- Capa de Interfaz de Usuario (HUD Retro FighterZ) -->
+        <div id="hud-overlay" class="ui-layer">
+            <!-- Jugador 1 HUD -->
+            <div class="player-hud p1-hud">
+                <div class="portrait-container">
+                    <div id="p1-portrait" class="portrait goku"></div>
+                </div>
+                <div class="bars-container">
+                    <div class="player-name-row">
+                        <span id="p1-name" class="player-name">GOKU (SSJ)</span>
+                        <span id="p1-transform-badge" class="badge active">SUPER SAIYAN</span>
+                    </div>
+                    <div class="health-bar-bg">
+                        <div id="p1-health" class="health-bar-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="shield-bar-bg">
+                        <div id="p1-shield" class="shield-bar-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="ki-bar-container" id="p1-ki-container">
+                        <div class="ki-segment"></div><div class="ki-segment"></div><div class="ki-segment"></div>
+                        <div class="ki-segment"></div><div class="ki-segment"></div><div class="ki-segment"></div>
+                        <div class="ki-segment"></div>
+                    </div>
+                    <div class="dash-charges-container" id="p1-dash-charges">
+                        <span class="dash-dot active"></span>
+                        <span class="dash-dot active"></span>
+                        <span class="dash-dot active"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Centro: Cronómetro y Contador de Combos -->
+            <div class="center-hud">
+                <div id="timer" class="timer">99</div>
+                <div id="combo-display" class="combo-box hidden">
+                    <span id="combo-count" class="combo-num">0</span>
+                    <span class="combo-text">HITS!</span>
+                    <span id="combo-rating" class="combo-sub">TENKAICHI RUSH!</span>
+                </div>
+            </div>
+
+            <!-- Jugador 2 HUD -->
+            <div class="player-hud p2-hud">
+                <div class="bars-container align-right">
+                    <div class="player-name-row">
+                        <span id="p2-transform-badge" class="badge">TRI-BEAM MASTER</span>
+                        <span id="p2-name" class="player-name">TIEN SHINHAN</span>
+                    </div>
+                    <div class="health-bar-bg">
+                        <div id="p2-health" class="health-bar-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="shield-bar-bg">
+                        <div id="p2-shield" class="shield-bar-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="ki-bar-container" id="p2-ki-container">
+                        <div class="ki-segment"></div><div class="ki-segment"></div><div class="ki-segment"></div>
+                        <div class="ki-segment"></div><div class="ki-segment"></div><div class="ki-segment"></div>
+                        <div class="ki-segment"></div>
+                    </div>
+                    <div class="dash-charges-container align-right" id="p2-dash-charges">
+                        <span class="dash-dot active"></span>
+                        <span class="dash-dot active"></span>
+                        <span class="dash-dot active"></span>
+                    </div>
+                </div>
+                <div class="portrait-container">
+                    <div id="p2-portrait" class="portrait tien"></div>
+                </div>
+            </div>
+
+            <!-- Medidores Inferiores de Nivel de Ki (Nivel Magenta 16/32-Bit) -->
+            <div class="bottom-super-meters">
+                <div class="super-meter p1-super">
+                    <span id="p1-ki-level" class="super-num">4</span>
+                    <div class="super-bar-bg"><div id="p1-super-fill" class="super-bar-fill"></div></div>
+                </div>
+                <div class="super-meter p2-super">
+                    <div class="super-bar-bg"><div id="p2-super-fill" class="super-bar-fill"></div></div>
+                    <span id="p2-ki-level" class="super-num">4</span>
+                </div>
+            </div>
+
+            <div id="debug-indicator" class="debug-tag hidden">HITBOX DEBUG (F1)</div>
+        </div>
+
+        <!-- Menú Principal -->
+        <div id="main-menu" class="overlay-screen active">
+            <h1 class="game-logo">TENKAICHI <span>CLASH</span></h1>
+            <p class="subtitle">32-BIT DRAGON BALL FIGHTERZ EDITION</p>
+            <div class="menu-buttons">
+                <button class="btn" onclick="openCharSelect('arcade')">MODO TORNEO (1P vs IA)</button>
+                <button class="btn" onclick="openCharSelect('versus')">VERSUS LOCAL (1P vs 2P)</button>
+            </div>
+            <div class="controls-guide">
+                <h3>CONTROLES (P1):</h3>
+                <p><strong>Movimiento:</strong> A / D (Mover) | W (Saltar / Flotar) | S (Escudo) | N (Dash 0.2s)</p>
+                <p><strong>Combate:</strong> F / Z (Físico) | G / X (Ki Blast) | C (Kamehameha / Beam) | V (Patada Pesada) | H / B (Parry 0.5s) | M (Cargar Ki)</p>
+                <p style="color: #ffd700; margin-top: 6px;"><em>CONTROLES (P2): Flechas (Mover/Saltar/Bloquear) | K (Físico) | L (Ki Blast) | J (Parry)</em></p>
+            </div>
+        </div>
+
+        <!-- Selección de Personaje -->
+        <div id="char-select-screen" class="overlay-screen hidden">
+            <h2 class="select-title">SELECCIONA TU LUCHADOR SAIYAN</h2>
+            <div class="char-cards">
+                <div class="char-card selected" id="card-kaito" onclick="selectCharacter('kaito')">
+                    <div class="sprite-preview kaito-preview"></div>
+                    <h3>GOKU (SSJ)</h3>
+                    <p class="char-role">Guerrero Saiyan</p>
+                    <p class="char-desc">Kamehameha | Dragon Rush | Ki Surge</p>
+                </div>
+                <div class="char-card" id="card-ryuko" onclick="selectCharacter('ryuko')">
+                    <div class="sprite-preview ryuko-preview"></div>
+                    <h3>TIEN SHINHAN</h3>
+                    <p class="char-role">Maestro de Grulla</p>
+                    <p class="char-desc">Tri-Beam | Crane Elbow | Solar Counter</p>
+                </div>
+                <div class="char-card" id="card-mizu" onclick="selectCharacter('mizu')">
+                    <div class="sprite-preview mizu-preview"></div>
+                    <h3>TRUNKS</h3>
+                    <p class="char-role">Guerrero del Futuro</p>
+                    <p class="char-desc">Burning Slash | Finish Buster | Sword Counter</p>
+                </div>
+            </div>
+            <button class="btn" onclick="confirmCharacter()">¡ENTRAR AL ARENA!</button>
+        </div>
+
+        <!-- Pantalla de Resultados -->
+        <div id="result-screen" class="overlay-screen hidden">
+            <h1 id="winner-title" class="ko-title">¡K.O.!</h1>
+            <div class="stats-box">
+                <p id="stat-winner">GANADOR: GOKU (SSJ)</p>
+                <p id="stat-max-combo" style="color: #ffd700; margin-top: 10px;">COMBO MÁXIMO: 0 HITS</p>
+            </div>
+            <div class="menu-buttons">
+                <button class="btn" onclick="restartMatch()">REVANCHA</button>
+                <button class="btn" onclick="showMainMenu()">MENÚ PRINCIPAL</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/js/script.js"></script>
+</body>
+</html>

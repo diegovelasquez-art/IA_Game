@@ -1,0 +1,444 @@
+* {
+    box-sizing: border-box;
+    user-select: none;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #040108;
+    font-family: 'Orbitron', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    color: #fff;
+}
+
+#game-container {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    box-shadow: 0 0 60px rgba(0, 255, 255, 0.4), 0 0 120px rgba(255, 0, 128, 0.3);
+    border: 4px solid #00ffff;
+    background: #000;
+}
+
+/* Efecto de Vaciado / Shake de Pantalla por Golpes */
+.shake {
+    animation: screenShake 0.18s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes screenShake {
+    10%, 90% { transform: translate3d(-3px, 2px, 0); }
+    20%, 80% { transform: translate3d(5px, -4px, 0); }
+    30%, 50%, 70% { transform: translate3d(-7px, 6px, 0); }
+    40%, 60% { transform: translate3d(7px, -5px, 0); }
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 26px;
+}
+
+.player-hud {
+    display: flex;
+    gap: 12px;
+    width: 440px;
+}
+
+.p2-hud {
+    flex-direction: row-reverse;
+}
+
+.portrait-container {
+    width: 76px;
+    height: 76px;
+    border: 3px solid #ffd700;
+    background: #100020;
+    box-shadow: 0 0 18px #ffd700;
+    transform: skewX(-12deg);
+    overflow: hidden;
+}
+
+.portrait {
+    width: 100%;
+    height: 100%;
+}
+
+.portrait.goku { background: linear-gradient(135deg, #ff8c00, #ff0055); }
+.portrait.tien { background: linear-gradient(135deg, #00bfff, #0055ff); }
+.portrait.mizu { background: linear-gradient(135deg, #9d00ff, #00ffff); }
+
+.bars-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.player-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Bangers', cursive;
+    font-size: 24px;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px #000, 0 0 10px #00ffff;
+}
+
+.badge {
+    font-size: 10px;
+    background: #ffd700;
+    color: #000;
+    padding: 2px 6px;
+    font-weight: 900;
+    display: none;
+    box-shadow: 0 0 10px #ffd700;
+}
+
+.badge.active {
+    display: inline-block;
+}
+
+.health-bar-bg {
+    width: 100%;
+    height: 20px;
+    background: rgba(15, 0, 30, 0.9);
+    border: 2px solid #fff;
+    transform: skewX(-15deg);
+    overflow: hidden;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
+.health-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff0055, #ffcc00, #00ff66);
+    transition: width 0.1s linear;
+}
+
+.shield-bar-bg {
+    width: 100%;
+    height: 7px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #00ffff;
+    transform: skewX(-15deg);
+    overflow: hidden;
+}
+
+.shield-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ffff, #0088ff);
+    transition: width 0.05s linear;
+}
+
+.ki-bar-container {
+    display: flex;
+    gap: 4px;
+    height: 12px;
+    transform: skewX(-15deg);
+}
+
+.ki-segment {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: background 0.2s;
+}
+
+.ki-segment.full {
+    background: #ffd700;
+    box-shadow: 0 0 10px #ffd700, inset 0 0 5px #fff;
+}
+
+.dash-charges-container {
+    display: flex;
+    gap: 6px;
+    margin-top: 3px;
+}
+
+.dash-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #222;
+    border: 1px solid #00ffff;
+    transition: all 0.2s ease;
+}
+
+.dash-dot.active {
+    background: #00ffff;
+    box-shadow: 0 0 8px #00ffff;
+}
+
+.center-hud {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.timer {
+    font-size: 52px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 20px #ff0055, 3px 3px 0 #000;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2px 20px;
+    border: 3px solid #00ffff;
+    transform: skewX(-12deg);
+    box-shadow: 0 0 15px #00ffff;
+}
+
+.combo-box {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: pulse 0.15s infinite alternate;
+}
+
+.combo-num {
+    font-size: 72px;
+    font-family: 'Bangers', cursive;
+    color: #ffd700;
+    text-shadow: 0 0 25px #ff0055, 4px 4px 0 #000;
+    line-height: 0.9;
+}
+
+.combo-text {
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: 3px;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.combo-sub {
+    font-size: 12px;
+    color: #00ffff;
+    letter-spacing: 2px;
+    font-weight: 900;
+}
+
+.bottom-super-meters {
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    right: 30px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.super-meter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.super-num {
+    font-family: 'Bangers', cursive;
+    font-size: 70px;
+    color: #ff007f;
+    text-shadow: 0 0 25px #ff007f, 4px 4px 0 #000, -2px -2px 0 #fff;
+}
+
+.super-bar-bg {
+    width: 180px;
+    height: 16px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #ff007f;
+    transform: skewX(-20deg);
+    overflow: hidden;
+    box-shadow: 0 0 12px #ff007f;
+}
+
+.super-bar-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ff007f, #ff66cc, #ffffff);
+}
+
+.debug-tag {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 10px;
+    background: rgba(255, 0, 0, 0.85);
+    padding: 3px 6px;
+}
+
+.overlay-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(6, 1, 14, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    z-index: 100;
+}
+
+.game-logo {
+    font-size: 74px;
+    font-family: 'Bangers', cursive;
+    color: #fff;
+    text-shadow: 0 0 25px #00ffff, 4px 4px 0 #000;
+}
+
+.game-logo span {
+    color: #ff007f;
+    text-shadow: 0 0 25px #ff007f, 4px 4px 0 #000;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #ffd700;
+    letter-spacing: 3px;
+    font-weight: bold;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 350px;
+}
+
+.btn {
+    pointer-events: auto;
+    padding: 15px 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 900;
+    color: #fff;
+    background: linear-gradient(90deg, #ff007f, #7928ca);
+    border: 2px solid #00ffff;
+    cursor: pointer;
+    transform: skewX(-12deg);
+    transition: all 0.2s ease;
+    box-shadow: 0 0 18px rgba(255, 0, 127, 0.5);
+}
+
+.btn:hover {
+    transform: skewX(-12deg) scale(1.05);
+    background: linear-gradient(90deg, #00ffff, #0088ff);
+    box-shadow: 0 0 28px rgba(0, 255, 255, 0.9);
+    color: #000;
+}
+
+.controls-guide {
+    max-width: 880px;
+    text-align: center;
+    font-size: 11px;
+    color: #ccc;
+    line-height: 1.6;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 14px;
+    border: 1px solid rgba(0, 255, 255, 0.4);
+}
+
+.select-title {
+    font-family: 'Bangers', cursive;
+    font-size: 40px;
+    color: #ffd700;
+}
+
+.char-cards {
+    display: flex;
+    gap: 26px;
+}
+
+.char-card {
+    pointer-events: auto;
+    width: 230px;
+    height: 290px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px solid #444;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 12px;
+    transition: all 0.2s ease;
+}
+
+.char-card:hover, .char-card.selected {
+    border-color: #00ffff;
+    box-shadow: 0 0 25px #00ffff;
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateY(-6px);
+}
+
+.sprite-preview {
+    width: 65px;
+    height: 85px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.kaito-preview { background: linear-gradient(45deg, #ff8c00, #ff0055); }
+.ryuko-preview { background: linear-gradient(45deg, #00bfff, #0055ff); }
+.mizu-preview { background: linear-gradient(45deg, #9d00ff, #00ffff); }
+
+.char-card h3 {
+    font-family: 'Bangers', cursive;
+    font-size: 28px;
+    color: #ffd700;
+}
+
+.char-role {
+    font-size: 10px;
+    color: #00ffff;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.char-desc {
+    font-size: 9px;
+    color: #aaa;
+    text-align: center;
+}
+
+.ko-title {
+    font-size: 90px;
+    font-family: 'Bangers', cursive;
+    color: #ff0055;
+    text-shadow: 0 0 35px #ff0055, 5px 5px 0 #000;
+}
+
+.stats-box {
+    text-align: center;
+    font-size: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+}
