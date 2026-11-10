@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tenkaichi Clash 32-Bit - DBZ Fighting Engine</title>
+    <title>KI CLASH 32-BIT - FighterZ Anime Edition</title>
     <link rel="stylesheet" href="static/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Orbitron:wght@700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="game-container" class="shake-target">
-        <!-- Canvas de Renderizado Gráfico -->
+        <!-- Canvas de Renderizado Gráfico Anime -->
         <canvas id="gameCanvas" width="1280" height="720"></canvas>
 
-        <!-- Capa de Interfaz de Usuario (HUD Retro FighterZ) -->
+        <!-- Capa de Interfaz (HUD DBZ FighterZ) -->
         <div id="hud-overlay" class="ui-layer">
             <!-- Jugador 1 HUD -->
             <div class="player-hud p1-hud">
@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <!-- Centro: Cronómetro y Contador de Combos -->
+            <!-- Centro: Cronómetro y Combos -->
             <div class="center-hud">
                 <div id="timer" class="timer">99</div>
                 <div id="combo-display" class="combo-box hidden">
@@ -82,15 +82,15 @@
                 </div>
             </div>
 
-            <!-- Medidores Inferiores de Nivel de Ki (Nivel Magenta 16/32-Bit) -->
+            <!-- Medidores Inferiores de Nivel de Ki -->
             <div class="bottom-super-meters">
                 <div class="super-meter p1-super">
-                    <span id="p1-ki-level" class="super-num">4</span>
+                    <span id="p1-ki-level" class="super-num">0</span>
                     <div class="super-bar-bg"><div id="p1-super-fill" class="super-bar-fill"></div></div>
                 </div>
                 <div class="super-meter p2-super">
                     <div class="super-bar-bg"><div id="p2-super-fill" class="super-bar-fill"></div></div>
-                    <span id="p2-ki-level" class="super-num">4</span>
+                    <span id="p2-ki-level" class="super-num">0</span>
                 </div>
             </div>
 
@@ -99,56 +99,74 @@
 
         <!-- Menú Principal -->
         <div id="main-menu" class="overlay-screen active">
-            <h1 class="game-logo">TENKAICHI <span>CLASH</span></h1>
-            <p class="subtitle">32-BIT DRAGON BALL FIGHTERZ EDITION</p>
-            <div class="menu-buttons">
-                <button class="btn" onclick="openCharSelect('arcade')">MODO TORNEO (1P vs IA)</button>
-                <button class="btn" onclick="openCharSelect('versus')">VERSUS LOCAL (1P vs 2P)</button>
-            </div>
-            <div class="controls-guide">
-                <h3>CONTROLES (P1):</h3>
-                <p><strong>Movimiento:</strong> A / D (Mover) | W (Saltar / Flotar) | S (Escudo) | N (Dash 0.2s)</p>
-                <p><strong>Combate:</strong> F / Z (Físico) | G / X (Ki Blast) | C (Kamehameha / Beam) | V (Patada Pesada) | H / B (Parry 0.5s) | M (Cargar Ki)</p>
-                <p style="color: #ffd700; margin-top: 6px;"><em>CONTROLES (P2): Flechas (Mover/Saltar/Bloquear) | K (Físico) | L (Ki Blast) | J (Parry)</em></p>
+            <div class="menu-content">
+                <h1 class="game-logo">FIGHTERZ <span>CLASH</span></h1>
+                <p class="subtitle">DRAGON BALL ANIME BATTLE ARENA</p>
+                
+                <div class="menu-buttons">
+                    <button class="btn" id="btn-arcade">MODO HISTORIA (1P vs IA)</button>
+                    <button class="btn" id="btn-versus">VERSUS LOCAL (1P vs 2P)</button>
+                </div>
+
+                <div class="controls-guide">
+                    <div class="controls-col">
+                        <h4 style="color: #00ffff;">JUGADOR 1</h4>
+                        <p><strong>Movimiento:</strong> A / D (Mover) | W (Saltar) | S (Escudo) | Espacio (Dash)</p>
+                        <p><strong>Ataques (1-6):</strong> Z (1), X (2), C (3), V (4), B (5), N (6)</p>
+                        <p><strong>Energía (7):</strong> M (Cargar Ki) | H (Parry Counter)</p>
+                        <p><strong>Supers:</strong> Q (Lv 1), E (Lv 3), R (Lv 7 One-Shot Grab)</p>
+                    </div>
+                    <div class="controls-col">
+                        <h4 style="color: #ff007f;">JUGADOR 2</h4>
+                        <p><strong>Movimiento:</strong> Flechas Izq/Der (Mover) | Arriba (Saltar) | Abajo (Escudo)</p>
+                        <p><strong>Ataques (1-6):</strong> J (1), K (2), L (3), Ñ (4), I (5), O (6)</p>
+                        <p><strong>Energía (7):</strong> U (Cargar Ki) | P (Parry Counter)</p>
+                        <p><strong>Supers:</strong> 8 (Lv 1), 9 (Lv 3), 0 (Lv 7 One-Shot Grab)</p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Selección de Personaje -->
         <div id="char-select-screen" class="overlay-screen hidden">
-            <h2 class="select-title">SELECCIONA TU LUCHADOR SAIYAN</h2>
-            <div class="char-cards">
-                <div class="char-card selected" id="card-kaito" onclick="selectCharacter('kaito')">
-                    <div class="sprite-preview kaito-preview"></div>
-                    <h3>GOKU (SSJ)</h3>
-                    <p class="char-role">Guerrero Saiyan</p>
-                    <p class="char-desc">Kamehameha | Dragon Rush | Ki Surge</p>
+            <div class="menu-content">
+                <h2 class="select-title">SELECCIONA TU GUERRERO Z</h2>
+                <div class="char-cards">
+                    <div class="char-card selected" id="card-kaito" data-char="kaito">
+                        <div class="sprite-preview goku-bg"></div>
+                        <h3>GOKU (SSJ)</h3>
+                        <p class="char-role">Guerrero Saiyan</p>
+                        <p class="char-desc">Kamehameha | Dragon Rush | Instant Transmission</p>
+                    </div>
+                    <div class="char-card" id="card-ryuko" data-char="ryuko">
+                        <div class="sprite-preview tien-bg"></div>
+                        <h3>TIEN SHINHAN</h3>
+                        <p class="char-role">Maestro de Grulla</p>
+                        <p class="char-desc">Neo Tri-Beam | Crane Elbow | Mafuba</p>
+                    </div>
+                    <div class="char-card" id="card-mizu" data-char="mizu">
+                        <div class="sprite-preview trunks-bg"></div>
+                        <h3>TRUNKS</h3>
+                        <p class="char-role">Guerrero del Futuro</p>
+                        <p class="char-desc">Burning Slash | Finish Buster | Heat Dome</p>
+                    </div>
                 </div>
-                <div class="char-card" id="card-ryuko" onclick="selectCharacter('ryuko')">
-                    <div class="sprite-preview ryuko-preview"></div>
-                    <h3>TIEN SHINHAN</h3>
-                    <p class="char-role">Maestro de Grulla</p>
-                    <p class="char-desc">Tri-Beam | Crane Elbow | Solar Counter</p>
-                </div>
-                <div class="char-card" id="card-mizu" onclick="selectCharacter('mizu')">
-                    <div class="sprite-preview mizu-preview"></div>
-                    <h3>TRUNKS</h3>
-                    <p class="char-role">Guerrero del Futuro</p>
-                    <p class="char-desc">Burning Slash | Finish Buster | Sword Counter</p>
-                </div>
+                <button class="btn" id="btn-confirm-char">¡LUCHAR!</button>
             </div>
-            <button class="btn" onclick="confirmCharacter()">¡ENTRAR AL ARENA!</button>
         </div>
 
         <!-- Pantalla de Resultados -->
         <div id="result-screen" class="overlay-screen hidden">
-            <h1 id="winner-title" class="ko-title">¡K.O.!</h1>
-            <div class="stats-box">
-                <p id="stat-winner">GANADOR: GOKU (SSJ)</p>
-                <p id="stat-max-combo" style="color: #ffd700; margin-top: 10px;">COMBO MÁXIMO: 0 HITS</p>
-            </div>
-            <div class="menu-buttons">
-                <button class="btn" onclick="restartMatch()">REVANCHA</button>
-                <button class="btn" onclick="showMainMenu()">MENÚ PRINCIPAL</button>
+            <div class="menu-content">
+                <h1 id="winner-title" class="ko-title">¡K.O.!</h1>
+                <div class="stats-box">
+                    <p id="stat-winner">GANADOR: GOKU (SSJ)</p>
+                    <p id="stat-max-combo" style="color: #ffd700; margin-top: 10px;">COMBO MÁXIMO: 0 HITS</p>
+                </div>
+                <div class="menu-buttons">
+                    <button class="btn" id="btn-restart">REVANCHA</button>
+                    <button class="btn" id="btn-main-menu">MENÚ PRINCIPAL</button>
+                </div>
             </div>
         </div>
     </div>
